@@ -16,20 +16,17 @@ public class AudioBuffer {
 		this.step = fft_sample_length - overlap_sample_length;
 	}
 	
-	public void push_samples(List<Integer> samples) {
+	public void push(List<Integer> samples) {
 		this.data.addAll(samples);
 	}
 	
-	public List<Integer> pop_working_set() {
-		int length = this.data.size();
-		if (length < this.fft_sample_length) {
-			return null;
-		} else {
-			int count = (length - this.fft_sample_length) / this.step;
-			int output_length = this.fft_sample_length + count * this.step;
-			List<Integer> output = this.data.subList(0, output_length + 1);
-			this.data = this.data.subList(output_length + 1, this.data.size());
-			return output;
-		}
+	public boolean available() {
+		return this.data.size() >= this.fft_sample_length;
+	}
+	
+	public List<Integer> read() {
+		List<Integer> output = this.data.subList(0, this.fft_sample_length);
+		this.data = this.data.subList(this.step, this.data.size());
+		return output;
 	}
 }
