@@ -10,7 +10,7 @@ public class FFT {
 	private Object step;
 	private int numFreqs;
 	private double[] windowVals;
-	public int[] freqs;
+	public List<Double> freqs;
 
 	public FFT(int rate) {
 		this.rate = rate;
@@ -22,22 +22,22 @@ public class FFT {
 		
 		this.numFreqs = this.fft_sample_length / 2 + 1;
 		this.windowVals = hanning(this.fft_sample_length); // TODO: Hanning window in library
-		this.freqs = new ArrayList<Integer>();
+		this.freqs = new ArrayList<Double>();
 		double scalar = this.rate / this.fft_sample_length;
 		for (int i=0; i<this.numFreqs; i++) {
 			 this.freqs.add(scalar * i);
 		}
 	}
 	
-	public double[] run(int[] x) {
-		double[] windowed_x = new double[x.length];
-		for (int i=0; i<x.length; i++) {
-			windowed_x[i] = x[i] * this.windowVals[i];
+	public Slice run(List<Integer> x) {
+		List<Double> windowed_x = new ArrayList<Double>(x.size());
+		for (int i=0; i<x.size(); i++) {
+			windowed_x.add(x.get(i) * this.windowVals[i]);
 		}
-		double[] fx = fft(windowed_x, this.fft_sample_length);
+		List<Double> fx = fft(windowed_x, this.fft_sample_length);
 		
 		// TODO: FFT library and implementation in code
 		
-		return fx;
+		return (Slice) fx;
 	}
 }

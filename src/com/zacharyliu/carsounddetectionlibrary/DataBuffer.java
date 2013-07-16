@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataBuffer<E> {
-	private List<E> data;
+	public List<E> data;
 	private int length;
 
 	public DataBuffer(int length) {
@@ -13,7 +13,7 @@ public class DataBuffer<E> {
 	}
 	
 	public DataBuffer() {
-		this((int) Double.POSITIVE_INFINITY);
+		this(-1);
 	}
 	
 	public void push(E item) {
@@ -22,9 +22,11 @@ public class DataBuffer<E> {
 	}
 
 	private void trim() {
-		length = this.data.size();
-		if (length > this.length) {
-			this.data = this.data.subList(length - this.length, length);
+		if (length > -1) {
+			length = this.data.size();
+			if (length > this.length) {
+				this.data = this.data.subList(length - this.length, length);
+			}
 		}
 	}
 }

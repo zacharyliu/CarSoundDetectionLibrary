@@ -17,7 +17,7 @@ public class AudioBuffer {
 	}
 	
 	public void push(List<Integer> samples) {
-		this.data.addAll(samples);
+		data.addAll(samples);
 	}
 	
 	public boolean available() {
