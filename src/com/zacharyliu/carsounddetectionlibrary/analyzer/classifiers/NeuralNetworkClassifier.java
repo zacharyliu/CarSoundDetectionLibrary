@@ -1,8 +1,8 @@
-package com.zacharyliu.carsounddetectionlibrary.classifier;
+package com.zacharyliu.carsounddetectionlibrary.analyzer.classifiers;
 
 import java.util.List;
 
-import com.zacharyliu.carsounddetectionlibrary.FeatureVector;
+import com.zacharyliu.carsounddetectionlibrary.analyzer.FeatureVector;
 
 public class NeuralNetworkClassifier implements Classifier {
 

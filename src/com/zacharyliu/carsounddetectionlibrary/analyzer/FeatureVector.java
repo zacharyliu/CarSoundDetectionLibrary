@@ -1,4 +1,4 @@
-package com.zacharyliu.carsounddetectionlibrary;
+package com.zacharyliu.carsounddetectionlibrary.analyzer;
 
 import java.util.ArrayList;
 

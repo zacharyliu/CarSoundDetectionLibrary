@@ -1,10 +1,12 @@
-package com.zacharyliu.carsounddetectionlibrary;
+package com.zacharyliu.carsounddetectionlibrary.analyzer;
 
 import java.util.List;
 
-import com.zacharyliu.carsounddetectionlibrary.classifier.Classifier;
+import android.os.AsyncTask;
 
-public class RealtimeAnalyzer {
+import com.zacharyliu.carsounddetectionlibrary.analyzer.classifiers.Classifier;
+
+public class RealtimeAnalyzer extends AsyncTask<Void, Void, Void> {
 	private Classifier classifier;
 	private FeatureVectorExtractor extractor;
 	private DataBuffer<Double> buffer;
@@ -20,5 +22,11 @@ public class RealtimeAnalyzer {
 		for (FeatureVector vector : feature_vectors) {
 			List<Double> result = classifier.run(vector);
 		}
+	}
+
+	@Override
+	protected Void doInBackground(Void... params) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

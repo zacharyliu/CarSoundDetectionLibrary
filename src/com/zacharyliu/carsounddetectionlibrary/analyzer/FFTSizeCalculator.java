@@ -1,4 +1,4 @@
-package com.zacharyliu.carsounddetectionlibrary;
+package com.zacharyliu.carsounddetectionlibrary.analyzer;
 
 public class FFTSizeCalculator {
 	private static final int FRAME_TIME_LENGTH = 180;
