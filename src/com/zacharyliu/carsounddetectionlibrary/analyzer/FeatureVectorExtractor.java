@@ -3,18 +3,17 @@ package com.zacharyliu.carsounddetectionlibrary.analyzer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class FeatureVectorExtractor {
 	private static final int[] DIVISIONS = {500, 1000, 2500, 5000, 7000};
 	private static final int MOVING_AVERAGE_LENGTH = 3; // length in number of FFT intervals
 	private static final int MOVING_THRESHOLD_LENGTH = 70;
-	private int rate;
-	private final int FRAME_TIME_LENGTH = 180;
+//	private int rate;
+//	private final int FRAME_TIME_LENGTH = 180;
 	private int fft_sample_length;
 	private int overlap_sample_length;
 	private AudioBuffer audio_buffer;
-	private Map<String, DataBuffer<?>> buffers;
+//	private Map<String, DataBuffer<?>> buffers;
 	private FFT fft;
 	private List<Double> original_freqs;
 	private List<Double> freqs;
@@ -25,7 +24,7 @@ public class FeatureVectorExtractor {
 	private int numFreqs;
 	
 	public FeatureVectorExtractor(int rate) {
-		this.rate = rate;
+//		this.rate = rate;
 		FFTSizeCalculator calculator = new FFTSizeCalculator(rate);
 		fft_sample_length = calculator.fft_sample_length;
 		overlap_sample_length = calculator.overlap_sample_length;
@@ -214,9 +213,9 @@ public class FeatureVectorExtractor {
 //		buffers.get("slices_bins").push(slice_bins);
 		
 		// Extract the third octave
-		int[] third_octave_range = {700, 1300};
-		List<Integer> third_octave_indexes = find_indexes(freqs, third_octave_range);
-		Slice third_octave = slice.sub(third_octave_indexes.get(0), third_octave_indexes.get(1));
+//		int[] third_octave_range = {700, 1300};
+//		List<Integer> third_octave_indexes = find_indexes(freqs, third_octave_range);
+//		Slice third_octave = slice.sub(third_octave_indexes.get(0), third_octave_indexes.get(1));
 //		buffers.get("third_octave").push(third_octave);
 		
 		// Pairwise differences (ratio of magnitude) between frequency bins

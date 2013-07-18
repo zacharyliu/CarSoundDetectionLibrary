@@ -10,7 +10,6 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Binder;
-import android.os.Debug;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -32,7 +31,7 @@ public class CarSoundDetectionService extends Service {
 	
 	private static final int SHORT_16BIT_CONSTANT = 32768; // 2^(16-1) for signed 16-bit short
 	
-	private int numRun = 1;
+//	private int numRun = 1;
 	
 	public class CarSoundDetectionBinder extends Binder {		
 		public void start(Activity activity, CarSoundDetectionReceiver receiver) {
@@ -87,10 +86,10 @@ public class CarSoundDetectionService extends Service {
 			recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, BUFFER_SIZE);
 			recorder.startRecording();
 			while (isRunning) {
-				if (numRun == 5) {
-					Debug.startMethodTracing("AnalyzerTrace", 50000000);
-					Log.d("TRACE", "Now tracing");
-				}
+//				if (numRun == 5) {
+//					Debug.startMethodTracing("AnalyzerTrace", 50000000);
+//					Log.d("TRACE", "Now tracing");
+//				}
 				start = android.os.SystemClock.uptimeMillis();
 				readBuffer();
 				Log.d("Read Time", Long.toString(android.os.SystemClock.uptimeMillis() - start));
@@ -106,16 +105,16 @@ public class CarSoundDetectionService extends Service {
 						}
 					});
 				}
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (numRun == 5) {
-					Debug.stopMethodTracing();
-				}
-				numRun++;
+//				try {
+//					Thread.sleep(1000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				if (numRun == 5) {
+//					Debug.stopMethodTracing();
+//				}
+//				numRun++;
 			}
 		}
 		

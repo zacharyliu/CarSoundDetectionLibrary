@@ -3,6 +3,8 @@ package com.zacharyliu.carsounddetectionlibrary.analyzer;
 import java.util.ArrayList;
 
 public class FeatureVector extends ArrayList<Double> {
+	private static final long serialVersionUID = 4774995738774315766L; // auto-generated
+
 	public FeatureVector() {
 		super();
 	}

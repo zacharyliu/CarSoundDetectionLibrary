@@ -8,8 +8,8 @@ import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 public class FFT {
 	private int rate;
 	private int fft_sample_length;
-	private int overlap_sample_length;
-	private int step;
+//	private int overlap_sample_length;
+//	private int step;
 	private int numFreqs;
 	private double[] windowVals;
 	public List<Double> freqs;
@@ -21,8 +21,8 @@ public class FFT {
 		
 		FFTSizeCalculator calculator = new FFTSizeCalculator(rate);
 		this.fft_sample_length = calculator.fft_sample_length;
-		this.overlap_sample_length = calculator.overlap_sample_length;
-		this.step = calculator.step;
+//		this.overlap_sample_length = calculator.overlap_sample_length;
+//		this.step = calculator.step;
 		
 		this.numFreqs = this.fft_sample_length / 2 + 1;
 		

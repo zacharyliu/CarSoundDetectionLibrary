@@ -5,15 +5,15 @@ import java.util.Queue;
 
 public class AudioBuffer {
 	private Queue<Integer> data;
-	private int step;
-	private int overlap_sample_length;
+//	private int step;
+//	private int overlap_sample_length;
 	private int fft_sample_length;
 
 	public AudioBuffer(int fft_sample_length, int overlap_sample_length) {
 		this.data = new LinkedList<Integer>();
 		this.fft_sample_length = fft_sample_length;
-		this.overlap_sample_length = overlap_sample_length;
-		this.step = fft_sample_length - overlap_sample_length;
+//		this.overlap_sample_length = overlap_sample_length;
+//		this.step = fft_sample_length - overlap_sample_length;
 	}
 	
 	public void push(int[] samples) {
