@@ -1,9 +1,7 @@
 package com.zacharyliu.carsounddetectionlibrary.analyzer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +15,6 @@ public class FeatureVectorExtractor {
 	private int overlap_sample_length;
 	private AudioBuffer audio_buffer;
 	private Map<String, DataBuffer<?>> buffers;
-	private FeatureVectorBuffer classifier;
 	private FFT fft;
 	private List<Double> original_freqs;
 	private List<Double> freqs;
@@ -33,7 +30,6 @@ public class FeatureVectorExtractor {
 		fft_sample_length = calculator.fft_sample_length;
 		overlap_sample_length = calculator.overlap_sample_length;
 		audio_buffer = new AudioBuffer(fft_sample_length, overlap_sample_length);
-		classifier = new FeatureVectorBuffer();
 		fft = new FFT(rate);
 		original_freqs = fft.freqs;
 		freqs = high_pass_filter_freqs(original_freqs, 500);

@@ -1,10 +1,8 @@
 package com.zacharyliu.carsounddetectionlibrary.analyzer.classifiers;
 
-import java.util.List;
-import java.util.Map;
-
 import com.zacharyliu.carsounddetectionlibrary.analyzer.FeatureVector;
+import com.zacharyliu.carsounddetectionlibrary.analyzer.Result;
 
 public interface Classifier {
-	public int[] run(FeatureVector feature_vector);
+	public Result run(FeatureVector feature_vector);
 }

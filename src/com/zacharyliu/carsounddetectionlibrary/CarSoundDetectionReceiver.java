@@ -1,7 +1,7 @@
 package com.zacharyliu.carsounddetectionlibrary;
 
-import java.util.List;
+import com.zacharyliu.carsounddetectionlibrary.analyzer.Result;
 
 public interface CarSoundDetectionReceiver {
-	public void onResult(int[] result);
+	public void onResult(Result result);
 }
