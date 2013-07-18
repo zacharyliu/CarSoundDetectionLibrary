@@ -3,16 +3,16 @@ package com.zacharyliu.carsounddetectionlibrary;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Binder;
 import android.os.IBinder;
-import android.renderscript.Sampler;
 
-import com.zacharyliu.carsounddetectionlibrary.analyzer.DataBuffer;
 import com.zacharyliu.carsounddetectionlibrary.analyzer.FeatureVector;
 import com.zacharyliu.carsounddetectionlibrary.analyzer.FeatureVectorExtractor;
 import com.zacharyliu.carsounddetectionlibrary.analyzer.classifiers.Classifier;
@@ -21,6 +21,7 @@ import com.zacharyliu.carsounddetectionlibrary.analyzer.classifiers.NeuralNetwor
 public class CarSoundDetectionService extends Service {
 	
 	private CarSoundDetectionReceiver mReceiver;
+	public Activity mActivity;
 	private static final int RECORDER_SAMPLERATE = 44100;
 	private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
 	private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
@@ -29,7 +30,8 @@ public class CarSoundDetectionService extends Service {
 	private static final int SHORT_16BIT_CONSTANT = 32768; // 2^(16-1) for signed 16-bit short
 	
 	public class CarSoundDetectionBinder extends Binder {		
-		public void start(CarSoundDetectionReceiver receiver) {
+		public void start(Activity activity, CarSoundDetectionReceiver receiver) {
+			mActivity = activity;
 			mReceiver = receiver;
 			analyzer.start();
 		}
@@ -51,15 +53,16 @@ public class CarSoundDetectionService extends Service {
 //		private DataBuffer<Double> buffer = new DataBuffer<Double>(100);
 		short[] raw_buffer = new short[BUFFER_SIZE];
 		List<Integer> buffer;
-		List<List<Integer>> results = new ArrayList<List<Integer>>();
+		List<int[]> results = new ArrayList<int[]>();
 		
-		private void push(List<Integer> samples) {
+		private List<int[]> push(List<Integer> samples) {
 			List<FeatureVector> feature_vectors = extractor.push(samples);
-			results.clear();
+			List<int[]> results = new ArrayList<int[]>();
 			for (FeatureVector vector : feature_vectors) {
-				List<Integer> result = classifier.run(vector);
+				int[] result = classifier.run(vector);
 				results.add(result);
 			}
+			return results;
 		}
 		
 		@Override
@@ -69,9 +72,14 @@ public class CarSoundDetectionService extends Service {
 			while (true) {
 				recorder.read(raw_buffer, 0, BUFFER_SIZE);
 				buffer = convertBuffer(raw_buffer);
-				push(buffer);
-				for (List<Integer> result : results) {
-					mReceiver.onResult(result);
+				results = push(buffer);
+				for (final int[] result : results) {
+					mActivity.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							mReceiver.onResult(result);
+						}
+					});
 				}
 			}
 		}
@@ -79,7 +87,7 @@ public class CarSoundDetectionService extends Service {
 		private List<Integer> convertBuffer(short[] buffer) {
 			List<Integer> output = new ArrayList<Integer>(buffer.length);
 			for (short i : buffer) {
-				output.add(i / SHORT_16BIT_CONSTANT);
+				output.add(i / SHORT_16BIT_CONSTANT); // TODO: fix to use floating division
 			}
 			return output;
 		}

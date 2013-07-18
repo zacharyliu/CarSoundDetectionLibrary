@@ -44,12 +44,13 @@ public final class SliceUtils {
 	}
 	
 	public static Slice divide(Slice a, double b) {
-		return multiply(a, 1 / b);
+		return multiply(a, 1/b);
 	}
 	
 	public static Slice sum(List<Slice> slices) {
-		Slice output = new Slice(slices.get(0).size());
-		for (int i=0; i<output.size(); i++) {
+		int size = slices.get(0).size();
+		Slice output = new Slice(size);
+		for (int i=0; i<size; i++) {
 			double total = 0;
 			for (Slice slice : slices) {
 				total += slice.get(i);

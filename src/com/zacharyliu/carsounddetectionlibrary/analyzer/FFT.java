@@ -34,7 +34,7 @@ public class FFT {
 		}
 		
 		this.freqs = new ArrayList<Double>();
-		double scalar = this.rate / this.fft_sample_length;
+		double scalar = ((double) this.rate) / this.fft_sample_length;
 		for (int i=0; i<this.numFreqs; i++) {
 			 this.freqs.add(scalar * i);
 		}

@@ -6,5 +6,5 @@ import java.util.Map;
 import com.zacharyliu.carsounddetectionlibrary.analyzer.FeatureVector;
 
 public interface Classifier {
-	public List<Integer> run(FeatureVector feature_vector);
+	public int[] run(FeatureVector feature_vector);
 }

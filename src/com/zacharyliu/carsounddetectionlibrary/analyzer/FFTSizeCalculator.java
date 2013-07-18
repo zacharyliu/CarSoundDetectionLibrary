@@ -9,9 +9,9 @@ public class FFTSizeCalculator {
 
 	public FFTSizeCalculator(int rate) {
 		this.rate = rate;
-		int frame_samples_length = FRAME_TIME_LENGTH / 1000 * this.rate;
+		int frame_samples_length = (int) ((double) FRAME_TIME_LENGTH / 1000 * this.rate);
 		this.fft_sample_length = (int) Math.pow(2, nextpow2(frame_samples_length));
-		this.overlap_sample_length = (int) 0.3 * frame_samples_length;
+		this.overlap_sample_length = (int) (0.3 * frame_samples_length);
 		this.step = this.fft_sample_length - this.overlap_sample_length; 
 	}
 	

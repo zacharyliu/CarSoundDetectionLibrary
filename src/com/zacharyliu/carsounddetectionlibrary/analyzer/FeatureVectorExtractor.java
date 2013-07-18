@@ -25,24 +25,24 @@ public class FeatureVectorExtractor {
 	private double maxFreq;
 	private DataBuffer<Slice> raw_slices_buffer;
 	private DataBuffer<Slice> averages_buffer;
+	private int numFreqs;
 	
 	public FeatureVectorExtractor(int rate) {
 		this.rate = rate;
 		FFTSizeCalculator calculator = new FFTSizeCalculator(rate);
-		this.fft_sample_length = calculator.fft_sample_length;
-		this.overlap_sample_length = calculator.overlap_sample_length;
-		this.audio_buffer = new AudioBuffer(this.fft_sample_length, this.overlap_sample_length);
-		this.buffers = new HashMap<String, DataBuffer<?>>();
-		// TODO: initialize buffers
-		this.classifier = new FeatureVectorBuffer();
-		this.fft = new FFT(this.rate);
-		this.original_freqs = this.fft.freqs;
-		this.freqs = this.high_pass_filter_freqs(this.original_freqs, 500);
-		this.bin_divisions_indexes = this.find_indexes(this.freqs, DIVISIONS);
-		this.maxFreq = Collections.max(freqs);
+		fft_sample_length = calculator.fft_sample_length;
+		overlap_sample_length = calculator.overlap_sample_length;
+		audio_buffer = new AudioBuffer(fft_sample_length, overlap_sample_length);
+		classifier = new FeatureVectorBuffer();
+		fft = new FFT(rate);
+		original_freqs = fft.freqs;
+		freqs = high_pass_filter_freqs(original_freqs, 500);
+		numFreqs = freqs.size();
+		bin_divisions_indexes = find_indexes(freqs, DIVISIONS);
+		maxFreq = Collections.max(freqs);
 		
-		this.raw_slices_buffer = new DataBuffer<Slice>();
-		this.averages_buffer = new DataBuffer<Slice>();
+		raw_slices_buffer = new DataBuffer<Slice>();
+		averages_buffer = new DataBuffer<Slice>();
 	}
 	
 	private List<Integer> find_indexes(List<Double> freqs, int[] divisions) {
@@ -87,7 +87,7 @@ public class FeatureVectorExtractor {
 		double target = threshold * sum;
 		double partial = 0;
 		int i = 0;
-		while (partial < target && i < slice.size()) {
+		while (partial < target && i < slice.size() - 1) {
 			partial += slice.get(i);
 			i++;
 		}
@@ -132,7 +132,7 @@ public class FeatureVectorExtractor {
 			start2 = 0;
 		}
 		Slice threshold = new Slice();
-		for (int freq_i=0; freq_i<averages.get(0).size(); freq_i++) {
+		for (int freq_i=0; freq_i<numFreqs; freq_i++) {
 			List<Double> band = new ArrayList<Double>();
 			for (int slice_i=start2; slice_i<averages.size(); slice_i++) {
 				band.add(averages.get(slice_i).get(freq_i));
@@ -158,7 +158,7 @@ public class FeatureVectorExtractor {
 	}
 	
 	private List<Double> high_pass_filter_freqs(List<Double> freqs, int cutoff_frequency) {
-		int[] divisions = {700, 1300};
+		int[] divisions = {cutoff_frequency};
 		int index = find_indexes(freqs, divisions).get(0);
 		List<Double> new_freqs = freqs.subList(index, freqs.size());
 		return new_freqs;

@@ -1,6 +1,7 @@
 package com.zacharyliu.carsounddetectionlibrary.analyzer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Slice extends ArrayList<Double> {
 	public Slice(int size) {
@@ -17,9 +18,13 @@ public class Slice extends ArrayList<Double> {
 			this.add(data[i]);
 		}
 	}
+	
+	public Slice(List<Double> data) {
+		addAll(data);
+	}
 
 	public Slice sub(int start, int end) {
-		return (Slice) subList(start, end);
+		return new Slice(subList(start, end));
 	}
 	
 	public Slice sub(int start) {
