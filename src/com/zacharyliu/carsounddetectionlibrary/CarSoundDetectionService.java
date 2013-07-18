@@ -32,7 +32,7 @@ public class CarSoundDetectionService extends Service {
 	
 	private static final int SHORT_16BIT_CONSTANT = 32768; // 2^(16-1) for signed 16-bit short
 	
-	private boolean firstRun = true;
+	private int numRun = 1;
 	
 	public class CarSoundDetectionBinder extends Binder {		
 		public void start(Activity activity, CarSoundDetectionReceiver receiver) {
@@ -64,17 +64,18 @@ public class CarSoundDetectionService extends Service {
 		private FeatureVectorExtractor extractor = new FeatureVectorExtractor(RECORDER_SAMPLERATE);
 //		private DataBuffer<Double> buffer = new DataBuffer<Double>(100);
 		short[] raw_buffer = new short[BUFFER_SIZE];
-		List<Integer> buffer;
+		int[] buffer;
 		List<Result> results = new ArrayList<Result>();
 		private AudioRecord recorder;
 		private boolean isRunning = false;
 		private long start;
 		
-		private List<Result> push(List<Integer> samples) {
-			List<FeatureVector> feature_vectors = extractor.push(samples);
+		private List<Result> push(int[] buffer) {
+			List<FeatureVector> feature_vectors = extractor.push(buffer);
+			int length = feature_vectors.size();
 			List<Result> results = new ArrayList<Result>();
-			for (FeatureVector vector : feature_vectors) {
-				Result result = classifier.run(vector);
+			for (int i=0; i<length; i++) {
+				Result result = classifier.run(feature_vectors.get(i));
 				results.add(result);
 			}
 			return results;
@@ -86,7 +87,7 @@ public class CarSoundDetectionService extends Service {
 			recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, BUFFER_SIZE);
 			recorder.startRecording();
 			while (isRunning) {
-				if (firstRun) {
+				if (numRun == 5) {
 					Debug.startMethodTracing("AnalyzerTrace", 50000000);
 					Log.d("TRACE", "Now tracing");
 				}
@@ -111,10 +112,10 @@ public class CarSoundDetectionService extends Service {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if (firstRun) {
+				if (numRun == 5) {
 					Debug.stopMethodTracing();
-					firstRun = false;
 				}
+				numRun++;
 			}
 		}
 		
@@ -129,10 +130,10 @@ public class CarSoundDetectionService extends Service {
 			}
 		}
 		
-		private List<Integer> convertBuffer(short[] buffer) {
-			List<Integer> output = new ArrayList<Integer>(buffer.length);
-			for (short i : buffer) {
-				output.add((int) ((double) i / SHORT_16BIT_CONSTANT));
+		private int[] convertBuffer(short[] buffer) {
+			int[] output = new int[buffer.length];
+			for (int i=0; i<buffer.length; i++) {
+				output[i] = ((int) ((double) buffer[i] / SHORT_16BIT_CONSTANT));
 			}
 			return output;
 		}

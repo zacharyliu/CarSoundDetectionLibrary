@@ -42,10 +42,10 @@ public class FFT {
 		this.fft = new DoubleFFT_1D(fft_sample_length);
 	}
 	
-	public Slice run(List<Integer> data) {
-		double[] x = new double[data.size()];
-		for (int i=0; i<data.size(); i++) {
-			x[i] = (data.get(i) * this.windowVals[i]);
+	public Slice run(int[] data) {
+		double[] x = new double[data.length];
+		for (int i=0; i<data.length; i++) {
+			x[i] = (data[i] * this.windowVals[i]);
 		}
 		
 		fft.realForward(x);
@@ -57,11 +57,12 @@ public class FFT {
 			double imag = x[2*k+1];
 			output[k] = Math.pow(real, 2) + Math.pow(imag, 2); // Get square of magnitude of vector
 		}
-		output[output.length-1] = x[x.length-1];
+		output[output.length-1] = x[x.length-1]; // (n/2) frequency component is purely real
 		
 		// Scaling and normalizing output
+		double scalar = windowValsScalar * rate;
 		for (int i=0; i<output.length; i++) {
-			output[i] = output[i] / windowValsScalar / rate;
+			output[i] = output[i] / scalar;
 			if (i != 0 && i != output.length-1) {
 				output[i] *= 2;
 			}

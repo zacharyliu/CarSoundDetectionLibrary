@@ -23,7 +23,6 @@ public class FeatureVectorExtractor {
 	private DataBuffer<Slice> raw_slices_buffer;
 	private DataBuffer<Slice> averages_buffer;
 	private int numFreqs;
-	private Slice debug_raw_slice;
 	
 	public FeatureVectorExtractor(int rate) {
 		this.rate = rate;
@@ -67,7 +66,7 @@ public class FeatureVectorExtractor {
 		return output;
 	}
 	
-	private double range_average(List<Double> array, int start, int end) {
+	private double range_average(Slice array, int start, int end) {
 		int count = end - start;
 		double total = 0;
 		for (int i=start; i<end; i++) {
@@ -77,10 +76,7 @@ public class FeatureVectorExtractor {
 	}
 	
 	private int slice_rolloff_freq(Slice slice, double threshold) {
-		double sum = 0;
-		for (double i : slice) {
-			sum += 1;
-		}
+		double sum = Statistics.sum(slice);
 		double target = threshold * sum;
 		double partial = 0;
 		int i = 0;
@@ -91,10 +87,10 @@ public class FeatureVectorExtractor {
 		return i;
 	}
 	
-	private double avg_zero_crossing_rate(List<Integer> sound_data) {
-		boolean[] signs = new boolean[sound_data.size()];
-		for (int i=0; i<sound_data.size(); i++) {
-			if (sound_data.get(i) >= 0) {
+	private double avg_zero_crossing_rate(int[] data) {
+		boolean[] signs = new boolean[data.length];
+		for (int i=0; i<data.length; i++) {
+			if (data[i] >= 0) {
 				signs[i] = true;
 			} else {
 				signs[i] = false;
@@ -106,7 +102,7 @@ public class FeatureVectorExtractor {
 				total++;
 			}
 		}
-		double rate = total / sound_data.size();
+		double rate = (double) total / data.length;
 		return rate;
 	}
 	
@@ -128,13 +124,20 @@ public class FeatureVectorExtractor {
 		if (start2 < 0) {
 			start2 = 0;
 		}
-		Slice threshold = new Slice();
+		Slice threshold = new Slice(numFreqs);
+		int bandLength = averages.size() - start2;
 		for (int freq_i=0; freq_i<numFreqs; freq_i++) {
-			List<Double> band = new ArrayList<Double>();
-			for (int slice_i=start2; slice_i<averages.size(); slice_i++) {
-				band.add(averages.get(slice_i).get(freq_i));
+			double[] band = new double[bandLength];
+			for (int slice_i=0; slice_i<bandLength; slice_i++) {
+				band[slice_i] = averages.get(slice_i + start2).get(freq_i);
 			}
-			threshold.add(Collections.min(band));
+			double min = band[0];
+			for (int i=1; i<band.length; i++) {
+				if (band[i] < min) {
+					min = band[i];
+				}
+			}
+			threshold.add(min);
 		}
 		
 		Slice new_slice = SliceUtils.sub(slice, threshold);
@@ -161,21 +164,23 @@ public class FeatureVectorExtractor {
 		return new_freqs;
 	}
 	
-	private List<Double> pairwise_differences(List<Double> items) {
+	private double[] pairwise_differences(Slice items) {
 		int size = items.size();
-		List<Double> ratios = new ArrayList<Double>();
+		int count = size * (size-1) / 2;
+		double[] ratios = new double[count];
 		
+		int index = 0;
 		for (int i=0; i<size; i++) {
 			for (int j=i+1; j<size; j++) {
-				ratios.add(items.get(i) - items.get(j));
+				ratios[index] = items.get(i) - items.get(j);
+				index++;
 			}
 		}
 		return ratios;
 	}
 	
-	public FeatureVector analyze(List<Integer> data) {
+	public FeatureVector analyze(int[] data) {
 		Slice raw_slice = this.fft.run(data);
-		debug_raw_slice = raw_slice;
 		
 		// Decibel scale
 		for (int i=0; i<raw_slice.size(); i++) {
@@ -215,13 +220,13 @@ public class FeatureVectorExtractor {
 //		buffers.get("third_octave").push(third_octave);
 		
 		// Pairwise differences (ratio of magnitude) between frequency bins
-		List<Double> ratios = pairwise_differences(slice_bins);
+		double[] ratios = pairwise_differences(slice_bins);
 //		buffers.get("ratios").push(ratios);
 		
 		// Overall magnitude of sound
 		double magnitude = 0;
-		for (double i : slice) {
-			magnitude += i;
+		for (int i=0; i<slice.size(); i++) {
+			magnitude += slice.get(i);
 		}
 //		buffers.get("magnitude").push(magnitude);
 		
@@ -240,7 +245,7 @@ public class FeatureVectorExtractor {
 		return vector;
 	}
 	
-	public List<FeatureVector> push(List<Integer> samples) {
+	public List<FeatureVector> push(int[] samples) {
 		audio_buffer.push(samples);
 		List<FeatureVector> vectors = new ArrayList<FeatureVector>();
 		while (audio_buffer.available()) {

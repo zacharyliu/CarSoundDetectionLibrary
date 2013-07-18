@@ -4,24 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Statistics {
-	public static double avg(List<Double> data) {
-		double total = 0;
-		for (double i : data) {
-			total += i;
-		}
-		return total / data.size();
+	public static double avg(Slice data) {
+		int size = data.size();
+		return sum(data) / size;
 	}
 	
-	public static double var(List<Double> data) {
+	public static double var(Slice data) {
 		double mean = avg(data);
 		double total = 0;
-		for (double i : data) {
-			total += Math.pow(i - mean, 2);
+		int size = data.size();
+		for (int i=0; i<size; i++) {
+			total += Math.pow(data.get(i) - mean, 2);
 		}
-		return total / (data.size() - 1);
+		return total / (size - 1);
 	}
 	
-	public static double std(List<Double> data) {
+	public static double std(Slice data) {
 		return Math.sqrt(var(data));
 	}
 	
@@ -31,5 +29,14 @@ public class Statistics {
 			output.add((double) item);
 		}
 		return output;
+	}
+
+	public static double sum(Slice data) {
+		double total = 0;
+		int size = data.size();
+		for (int i=0; i<size; i++) {
+			total += data.get(i);
+		}
+		return total;
 	}
 }
