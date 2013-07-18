@@ -11,8 +11,8 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
-import com.zacharyliu.carsounddetectionlibrary.CarSoundDetectionService.AnalyzerThread;
 import com.zacharyliu.carsounddetectionlibrary.analyzer.FeatureVector;
 import com.zacharyliu.carsounddetectionlibrary.analyzer.FeatureVectorExtractor;
 import com.zacharyliu.carsounddetectionlibrary.analyzer.Result;
@@ -27,7 +27,7 @@ public class CarSoundDetectionService extends Service {
 	private static final int RECORDER_SAMPLERATE = 44100;
 	private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
 	private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
-	private static final int BUFFER_SIZE = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
+	private static final int BUFFER_SIZE = 2 * AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
 	
 	private static final int SHORT_16BIT_CONSTANT = 32768; // 2^(16-1) for signed 16-bit short
 	
@@ -65,6 +65,7 @@ public class CarSoundDetectionService extends Service {
 		List<Result> results = new ArrayList<Result>();
 		private AudioRecord recorder;
 		private boolean isRunning = false;
+		private long start;
 		
 		private List<Result> push(List<Integer> samples) {
 			List<FeatureVector> feature_vectors = extractor.push(samples);
@@ -80,10 +81,15 @@ public class CarSoundDetectionService extends Service {
 		public void run() {
 			isRunning = true;
 			recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, BUFFER_SIZE);
+			recorder.startRecording();
 			while (isRunning) {
-				recorder.read(raw_buffer, 0, BUFFER_SIZE);
+				start = android.os.SystemClock.uptimeMillis();
+				readBuffer();
+				Log.d("Read Time", Long.toString(android.os.SystemClock.uptimeMillis() - start));
+				start = android.os.SystemClock.uptimeMillis();
 				buffer = convertBuffer(raw_buffer);
 				results = push(buffer);
+				Log.d("Analyze Time", Long.toString(android.os.SystemClock.uptimeMillis() - start));
 				for (final Result result : results) {
 					mActivity.runOnUiThread(new Runnable() {
 						@Override
@@ -92,6 +98,23 @@ public class CarSoundDetectionService extends Service {
 						}
 					});
 				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		private void readBuffer() {
+			int amountRead;
+			int offset = 0;
+			int remaining = BUFFER_SIZE;
+			while (remaining > 0) {
+				amountRead = recorder.read(raw_buffer, offset, remaining);
+				remaining -= amountRead;
+				offset += amountRead;
 			}
 		}
 		
@@ -105,6 +128,7 @@ public class CarSoundDetectionService extends Service {
 		
 		public void end() {
 			isRunning = false;
+			recorder.stop();
 			recorder.release();
 		}
 	}

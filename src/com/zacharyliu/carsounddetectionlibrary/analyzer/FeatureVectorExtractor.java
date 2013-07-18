@@ -23,6 +23,7 @@ public class FeatureVectorExtractor {
 	private DataBuffer<Slice> raw_slices_buffer;
 	private DataBuffer<Slice> averages_buffer;
 	private int numFreqs;
+	private Slice debug_raw_slice;
 	
 	public FeatureVectorExtractor(int rate) {
 		this.rate = rate;
@@ -92,8 +93,8 @@ public class FeatureVectorExtractor {
 	
 	private double avg_zero_crossing_rate(List<Integer> sound_data) {
 		boolean[] signs = new boolean[sound_data.size()];
-		for (int i : sound_data) {
-			if (i >= 0) {
+		for (int i=0; i<sound_data.size(); i++) {
+			if (sound_data.get(i) >= 0) {
 				signs[i] = true;
 			} else {
 				signs[i] = false;
@@ -174,6 +175,7 @@ public class FeatureVectorExtractor {
 	
 	public FeatureVector analyze(List<Integer> data) {
 		Slice raw_slice = this.fft.run(data);
+		debug_raw_slice = raw_slice;
 		
 		// Decibel scale
 		for (int i=0; i<raw_slice.size(); i++) {
@@ -224,7 +226,7 @@ public class FeatureVectorExtractor {
 //		buffers.get("magnitude").push(magnitude);
 		
 		// Standard deviation of frequency spectrum
-		double stddev = Statistics.std(Statistics.int_list_to_double(data));
+		double stddev = Statistics.std(slice);
 //		buffers.get("stddev").push(stddev);
 		
 		// Create feature vectors
