@@ -1,7 +1,7 @@
 package com.zacharyliu.carsounddetectionlibrary;
 
-import com.zacharyliu.carsounddetectionlibrary.analyzer.Result;
+import com.zacharyliu.carsounddetectionlibrary.analyzer.FeatureVector;
 
 public interface CarSoundDetectionReceiver {
-	public void onResult(Result result);
+	public void onResult(FeatureVector vector);
 }

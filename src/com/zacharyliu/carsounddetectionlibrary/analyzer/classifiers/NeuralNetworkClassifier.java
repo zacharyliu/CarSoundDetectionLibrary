@@ -6,8 +6,9 @@ import org.encog.ml.data.basic.BasicMLData;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 
+import android.util.Log;
+
 import com.zacharyliu.carsounddetectionlibrary.analyzer.FeatureVector;
-import com.zacharyliu.carsounddetectionlibrary.analyzer.Result;
 
 public class NeuralNetworkClassifier implements Classifier {
 	
@@ -26,10 +27,11 @@ public class NeuralNetworkClassifier implements Classifier {
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), false, n_outputs));
 		network.getStructure().finalizeStructure();
 		network.reset();
+		Log.d("Network", network.dumpWeights());
 	}
 
 	@Override
-	public Result run(FeatureVector feature_vector) {
+	public double[] run(FeatureVector feature_vector) {
 		// TODO Run neural network classification
 //		Result result = new Result(new double[] {(int) (Math.random() * 10)});
 		
@@ -37,12 +39,12 @@ public class NeuralNetworkClassifier implements Classifier {
 //		network.setInput(feature_vector.toRawArray());
 //		network.calculate();
 //		double[] output = network.getOutput();
-//		Result result = new Result(output);
+//		double[] result = output;
 //		return result;
 		
 		// Encog
 		MLData output = network.compute(new BasicMLData(feature_vector.toRawArray()));
-		Result result = new Result(output.getData());
+		double[] result = output.getData();
 		return result;
 	}
 

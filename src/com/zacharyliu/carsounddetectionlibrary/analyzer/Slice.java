@@ -1,5 +1,6 @@
 package com.zacharyliu.carsounddetectionlibrary.analyzer;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Slice {
@@ -48,5 +49,10 @@ public class Slice {
 	
 	public void set(int i, double value) {
 		data[i] = value;
+	}
+	
+	@Override
+	public String toString() {
+		return Integer.toString(data.length) + ": " + Arrays.toString(data);
 	}
 }

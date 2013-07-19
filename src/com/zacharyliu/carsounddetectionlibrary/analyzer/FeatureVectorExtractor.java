@@ -7,7 +7,7 @@ import java.util.List;
 public class FeatureVectorExtractor {
 	private static final int[] DIVISIONS = {500, 1000, 2500, 5000, 7000};
 	private static final int MOVING_AVERAGE_LENGTH = 3; // length in number of FFT intervals
-	private static final int MOVING_THRESHOLD_LENGTH = 70;
+	private static final int MOVING_THRESHOLD_LENGTH = 30;
 //	private int rate;
 //	private final int FRAME_TIME_LENGTH = 180;
 	private int fft_sample_length;
@@ -139,8 +139,9 @@ public class FeatureVectorExtractor {
 			threshold.add(min);
 		}
 		
-		Slice new_slice = SliceUtils.sub(slice, threshold);
-		new_slice = SliceUtils.clip(slice, 0);
+		Slice new_slice = SliceUtils.sub(slice, threshold); // normalize
+		new_slice = SliceUtils.clip(new_slice, 0); // clip at threshold
+		new_slice = SliceUtils.divide(new_slice, 10); // scale downwards
 		
 		return new_slice;
 	}
@@ -227,6 +228,7 @@ public class FeatureVectorExtractor {
 		for (int i=0; i<slice.size(); i++) {
 			magnitude += slice.get(i);
 		}
+		magnitude /= numFreqs;
 //		buffers.get("magnitude").push(magnitude);
 		
 		// Standard deviation of frequency spectrum

@@ -2,8 +2,11 @@ package com.zacharyliu.carsounddetectionlibrary.analyzer;
 
 import java.util.ArrayList;
 
+import com.zacharyliu.carsounddetectionlibrary.analyzer.classifiers.Classifier;
+
 public class FeatureVector extends ArrayList<Double> {
 	private static final long serialVersionUID = 4774995738774315766L; // auto-generated
+	private double[] result;
 
 	public FeatureVector() {
 		super();
@@ -23,5 +26,17 @@ public class FeatureVector extends ArrayList<Double> {
 			outArray[i] = (Double) inArray[i];
 		}
 		return outArray;
+	}
+	
+	public void classify(Classifier classifier) {
+		result = classifier.run(this);
+	}
+	
+	public double getResult() {
+		double sum = 0;
+		for (double item : result) {
+			sum += item;
+		}
+		return (double) sum / result.length;
 	}
 }

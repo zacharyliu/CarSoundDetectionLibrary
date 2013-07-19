@@ -1,8 +1,10 @@
 package com.zacharyliu.carsounddetectionlibrary.analyzer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import android.util.Log;
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 
 public class FFT {
@@ -32,6 +34,7 @@ public class FFT {
 			windowVals[i] = hamming_scalar(fft_sample_length, i);
 			windowValsScalar += Math.pow(windowVals[i], 2);
 		}
+		Log.d("windowVals", Arrays.toString(windowVals));
 		
 		this.freqs = new ArrayList<Double>();
 		double scalar = ((double) this.rate) / this.fft_sample_length;
@@ -45,7 +48,7 @@ public class FFT {
 	public Slice run(int[] data) {
 		double[] x = new double[data.length];
 		for (int i=0; i<data.length; i++) {
-			x[i] = (data[i] * this.windowVals[i]);
+			x[i] = (data[i] * windowVals[i]);
 		}
 		
 		fft.realForward(x);
@@ -55,7 +58,7 @@ public class FFT {
 		for (int k=0; k<loops; k++) {
 			double real = x[2*k];
 			double imag = x[2*k+1];
-			output[k] = Math.pow(real, 2) + Math.pow(imag, 2); // Get square of magnitude of vector
+			output[k] = Math.pow(real, 2) + Math.pow(imag, 2); // Get square of magnitude of complex vector
 		}
 		output[output.length-1] = x[x.length-1]; // (n/2) frequency component is purely real
 		
@@ -64,7 +67,7 @@ public class FFT {
 		for (int i=0; i<output.length; i++) {
 			output[i] = output[i] / scalar;
 			if (i != 0 && i != output.length-1) {
-				output[i] *= 2;
+				output[i] *= 2.0;
 			}
 		}
 		
@@ -72,6 +75,6 @@ public class FFT {
 	}
 	
 	private double hamming_scalar(int total, int n) {
-		return 0.5 * (1 - Math.cos(2 * Math.PI * n / (total - 1)));
+		return 0.5 * (1.0 - Math.cos(2.0 * Math.PI * n / (total - 1.0)));
 	}
 }
