@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import android.util.Log;
+
 public class FeatureVectorExtractor {
 	private static final int[] DIVISIONS = {500, 1000, 2500, 5000, 7000};
 	private static final int MOVING_AVERAGE_LENGTH = 3; // length in number of FFT intervals
@@ -55,10 +57,10 @@ public class FeatureVectorExtractor {
 	private Slice freq_bins(Slice slice) {
 		List<Integer> indexes = this.bin_divisions_indexes;
 		
-		Slice output = new Slice(indexes.size());
+		Slice output = new Slice(indexes.size()-1);
 		int prev_index = indexes.get(0);
 		for (int i=1; i<indexes.size(); i++) {
-			double average = range_average(slice, prev_index, indexes.get(i) + 1);
+			double average = range_average(slice, prev_index, indexes.get(i));
 			output.add(average);
 		}
 		
@@ -243,6 +245,7 @@ public class FeatureVectorExtractor {
 		vector.add(rolloff_freq);
 		vector.add(magnitude);
 		
+		Log.v("FeatureVectorExtractor", vector.toString());
 		return vector;
 	}
 	
