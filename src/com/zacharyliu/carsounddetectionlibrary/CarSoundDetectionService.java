@@ -59,7 +59,7 @@ public class CarSoundDetectionService extends Service {
 	}
 	
 	class AnalyzerThread extends Thread {
-		private Classifier classifier = new NeuralNetworkClassifier();
+		private Classifier classifier;
 		private FeatureVectorExtractor extractor = new FeatureVectorExtractor(RECORDER_SAMPLERATE);
 //		private DataBuffer<Double> buffer = new DataBuffer<Double>(100);
 		short[] raw_buffer = new short[BUFFER_SIZE];
@@ -72,9 +72,17 @@ public class CarSoundDetectionService extends Service {
 		private List<Result> push(int[] buffer) {
 			List<FeatureVector> feature_vectors = extractor.push(buffer);
 			int length = feature_vectors.size();
-			List<Result> results = new ArrayList<Result>();
+			List<Result> results = new ArrayList<Result>(length);
+			
+			// Initialize classifier if necessary
+			if (classifier == null && feature_vectors.size() > 0) {
+				classifier = new NeuralNetworkClassifier(feature_vectors.get(0).size(), 2); // TODO: Find way to specify number of outputs
+			}
+			
 			for (int i=0; i<length; i++) {
-				Result result = classifier.run(feature_vectors.get(i));
+				FeatureVector vector = feature_vectors.get(i);
+				Log.d("Vector!", vector.toString());
+				Result result = classifier.run(vector);
 				results.add(result);
 			}
 			return results;

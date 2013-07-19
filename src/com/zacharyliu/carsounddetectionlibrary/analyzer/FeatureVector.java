@@ -15,4 +15,13 @@ public class FeatureVector extends ArrayList<Double> {
 			add(data[i]);
 		}
 	}
+	
+	public double[] toRawArray() {
+		Object[] inArray = super.toArray();
+		double[] outArray = new double[inArray.length];
+		for (int i=0; i<inArray.length; i++) {
+			outArray[i] = (Double) inArray[i];
+		}
+		return outArray;
+	}
 }

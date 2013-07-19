@@ -1,15 +1,15 @@
 package com.zacharyliu.carsounddetectionlibrary.analyzer;
 
 public class Result {
-	private int[] array;
+	private double[] array;
 
-	public Result(int[] data) {
+	public Result(double[] data) {
 		array = data;
 	}
 	
 	public double getResult() {
 		int sum = 0;
-		for (int item : array) {
+		for (double item : array) {
 			sum += item;
 		}
 		return (double) sum / array.length;
