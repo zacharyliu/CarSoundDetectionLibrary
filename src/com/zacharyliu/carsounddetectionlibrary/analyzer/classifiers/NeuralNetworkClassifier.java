@@ -77,10 +77,11 @@ public class NeuralNetworkClassifier implements Classifier {
 				}
 				
 				public double run(double value) {
+					value += mBias;
 					if (!mLinear) {
 						value = 1.0 / (1.0 + Math.pow(Math.E, -value));
 					}
-					return value + mBias;
+					return value;
 				}
 			}
 		}
