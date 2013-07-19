@@ -6,7 +6,7 @@ import com.zacharyliu.carsounddetectionlibrary.analyzer.classifiers.Classifier;
 
 public class FeatureVector extends ArrayList<Double> {
 	private static final long serialVersionUID = 4774995738774315766L; // auto-generated
-	private double[] result;
+	public double[] result;
 
 	public FeatureVector() {
 		super();
