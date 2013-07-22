@@ -39,4 +39,16 @@ public class FeatureVector extends ArrayList<Double> {
 		}
 		return (double) sum / result.length;
 	}
+	
+	public String[] toStringArray() {
+		int size = size();
+		String[] output = new String[size + result.length];
+		for (int i=0; i<size; i++) {
+			output[i] = Double.toString(get(i));
+		}
+		for (int i=0; i<result.length; i++) {
+			output[size + i] = Double.toString(result[i]);
+		}
+		return output;
+	}
 }
